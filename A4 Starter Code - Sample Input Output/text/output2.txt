@@ -1,0 +1,8 @@
+Number of Unique Words: 9
+Number of Keywords: 0
+Number of Longwords: 0
+The average keyword frequency is 0
+The average longword length is 0
+Height of the unique words tree is : 5 (Optimal height for this tree is : 3)
+Height of the keywords tree is : -1 (Optimal height for this tree is : -1)
+Height of the longwords tree is : -1 (Optimal height for this tree is : -1)
