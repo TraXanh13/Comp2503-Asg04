@@ -130,7 +130,8 @@ public class BST<T extends Comparable<T>> implements Iterable<T>
 	   	// TODO: initialize internal state variables
    }
 
-   /** Return true if element d is present in the tree. 
+   /** 
+    * Return true if element d is present in the tree. 
    */
    public T find(T d) 
    {

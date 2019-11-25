@@ -89,7 +89,8 @@ public class A4
          {         	 
         	 // check if the newly read word already exist in the words tree.
         	 // If it has already been seen, just add the frequency count.
-        	 // If it hasn't been seen, create a new word object an add it to tree. 
+        	 // If it hasn't been seen, create a new word object an add it to tree.
+        	 
          }
       }
    }
