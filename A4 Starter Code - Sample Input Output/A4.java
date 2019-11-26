@@ -82,7 +82,7 @@ public class A4
       while (input.hasNext()) 
       {
          // get the next word, convert to lower case, strip out blanks and non 
-         // alphabetic characters.
+         // alphabetic characters. 
          String word = input.next().toLowerCase().trim().replaceAll("[^a-z]","");
 
          if (word.length() > 0) 
