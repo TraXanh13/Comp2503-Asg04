@@ -1,8 +1,9 @@
 import java.util.Iterator;
 
-import BST.BSTNode;
+//import BST.BSTNode;
 
 import java.util.Comparator;
+import java.util.EmptyStackException;
 
 /**
  * COMP 2503 Fall 2019 Assignment 4
@@ -18,13 +19,119 @@ import java.util.Comparator;
 
 public class BST<T extends Comparable<T>> implements Iterable<T> {
 	/*
+	 * Queue
+	 */
+	class Queue {
+		BSTNode head, tail;
+
+		public Queue() {
+			head = null;
+			tail = null;
+		}
+
+		/**
+		 * Adds node to the queue
+		 * 
+		 * @param element: the Word being added
+		 */
+		public void enqueue(T element) {
+			addTail(new BSTNode(element));
+		}
+
+		/**
+		 * Removes the head of the queue
+		 * 
+		 * @return: the data in the head
+		 */
+		public T dequeue() {
+			return removeHead();
+		}
+
+		/**
+		 * Removes the front of the queue
+		 * 
+		 * @return: the data at the head of the queue
+		 */
+		private T removeHead() {
+			BSTNode temp;
+			if (head == null) {
+				return null;
+			} else if (head.getRight() == null) {
+				temp = head;
+				head = null;
+			} else {
+				temp = head;
+				head = head.getRight();
+			}
+			return temp.getData();
+		}
+
+		/**
+		 * Adds to the tail of the queue (On the right side)
+		 * 
+		 * @param other: the node to be added
+		 */
+		private void addTail(BSTNode other) {
+			if (head == null) {
+				head = other;
+				tail = other;
+			} else {
+				tail.setRight(other);
+				tail = other;
+			}
+		}
+
+		/**
+		 * Unlinks the nodes from each other and resets the head and tail to null
+		 */
+		public void emptyList() {
+			BSTNode mover;
+			if (head == null || head.getRight() == null) {
+				head = null;
+				tail = null;
+			} else {
+				// Starts at the second element in the list
+				mover = head.getRight();
+				// Loops until the end of the list
+				while (mover != null) {
+					head.setRight(null);
+					head = mover;
+					mover = mover.getRight();
+				}
+				head = null;
+				tail = null;
+			}
+		}
+
+		/**
+		 * Checks to see if the list is empty
+		 */
+		public boolean isEmpty() {
+			return (head == null);
+		}
+
+		/**
+		 * Gets the data at the top of the list
+		 * 
+		 * @return: the data in the head of the queue
+		 */
+		public T peek() {
+			if (isEmpty()) {
+				throw new EmptyStackException();
+			} else {
+				return head.getData();
+			}
+		}
+	}
+
+	/*
 	 * The nodes of the tree.
 	 */
 	class BSTNode implements Comparable<BSTNode> {
 		private T data;
 		private BSTNode left;
 		private BSTNode right;
-		
+
 		public BSTNode(T d) {
 			setLeft(null);
 			setRight(null);
@@ -313,23 +420,24 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Traverse the tree in level order
-	 * @param r: the current 
+	 * 
+	 * @param       r: the current
 	 * @param level
 	 * @param v
 	 */
 	private void levelOrder(BSTNode r, int level, Visit<T> v) {
-		if(level == 1) {
+		if (level == 1) {
 			v.visit(r.getData());
 		}
-		if(r.getLeft() != null) {
-			levelOrder(r.getLeft(), level-1, v);
+		if (r.getLeft() != null) {
+			levelOrder(r.getLeft(), level - 1, v);
 		}
-		if(r.getRight() != null) {
-			levelOrder(r.getRight(), level-1, v);
+		if (r.getRight() != null) {
+			levelOrder(r.getRight(), level - 1, v);
 		}
 	}
-	
+
 }

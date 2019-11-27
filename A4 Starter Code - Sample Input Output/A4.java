@@ -92,7 +92,9 @@ public class A4
         	 // If it hasn't been seen, create a new word object an add it to tree.
         	 Word w = new Word(word);
         	 if(words.find(w) == null) {
-        		 
+        		 words.add(w);
+        	 }else {
+        		 words.find(w).incrCount();
         	 }
          }
       }
