@@ -34,8 +34,8 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 		 * 
 		 * @param element: the Word being added
 		 */
-		public void enqueue(T element) {
-			addTail(new BSTNode(element));
+		public void enqueue(BSTNode element) {
+			addTail(element);
 		}
 
 		/**
@@ -43,7 +43,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 		 * 
 		 * @return: the data in the head
 		 */
-		public T dequeue() {
+		public BSTNode dequeue() {
 			return removeHead();
 		}
 
@@ -52,7 +52,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 		 * 
 		 * @return: the data at the head of the queue
 		 */
-		private T removeHead() {
+		private BSTNode removeHead() {
 			BSTNode temp;
 			if (head == null) {
 				return null;
@@ -63,7 +63,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 				temp = head;
 				head = head.getRight();
 			}
-			return temp.getData();
+			return temp;
 		}
 
 		/**
@@ -178,6 +178,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	// the current size of the tree
 	private int size;
 	private Comparator<T> c;
+	private Queue q = new Queue();
 
 	/*
 	 * TODO: add any other internal state variables required to implement: - the
@@ -226,6 +227,21 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 		public void visit(T t) {
 			// TODO: Implement your logic for the visit method
 			// (Hint: enqueue t)
+			if(t != null) {
+				q.enqueue(t);
+			}
+		}
+		
+		/**
+		 * Checks to see if the queue is empty
+		 * @return false if empty and true if there is still elements
+		 */
+		public boolean hasNext() {
+			return !q.isEmpty();
+		}
+		
+		public T next() {
+			return q.dequeue();
 		}
 	}
 
@@ -415,7 +431,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 				v.visit(r.getData());
 				break;
 			case LEVELORDER:
-				levelOrder(r, height(), v);
+				levelOrder(r, v);
 				break;
 			}
 		}
@@ -424,19 +440,22 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	/**
 	 * Traverse the tree in level order
 	 * 
-	 * @param       r: the current
-	 * @param level
-	 * @param v
+	 * @param r: the root node
+	 * @param v: the visit object
 	 */
-	private void levelOrder(BSTNode r, int level, Visit<T> v) {
-		if (level == 1) {
-			v.visit(r.getData());
-		}
-		if (r.getLeft() != null) {
-			levelOrder(r.getLeft(), level - 1, v);
-		}
-		if (r.getRight() != null) {
-			levelOrder(r.getRight(), level - 1, v);
+	private void levelOrder(BSTNode r, Visit<T> v) {
+		q.enqueue(r);
+		BSTNode current = null;
+		while(!q.isEmpty()) {
+			current = q.dequeue();
+			if(current.getLeft() != null) {
+				q.enqueue(r.getLeft());
+			}
+			if(current.getRight() != null) {
+				q.enqueue(r.getRight());
+			}
+			v.visit(current.getData());
+			current = null;
 		}
 	}
 
