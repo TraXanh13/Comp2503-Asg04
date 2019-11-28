@@ -1,9 +1,10 @@
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 //import BST.BSTNode;
 
 import java.util.Comparator;
-import java.util.EmptyStackException;
 
 /**
  * COMP 2503 Fall 2019 Assignment 4
@@ -18,7 +19,6 @@ import java.util.EmptyStackException;
  */
 
 public class BST<T extends Comparable<T>> implements Iterable<T> {
-
 	/*
 	 * The nodes of the tree.
 	 */
@@ -27,36 +27,67 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 		private BSTNode left;
 		private BSTNode right;
 
+		/**
+		 * Constructor for the BSTNode
+		 * @param d: the data for the node
+		 */
 		public BSTNode(T d) {
 			setLeft(null);
 			setRight(null);
 			setData(d);
 		}
 
+		/**
+		 * Gets the data in the node
+		 * @return the data
+		 */
 		public T getData() {
 			return data;
 		}
 
+		/**
+		 * Sets the data to the node
+		 * @param d: the data to be set
+		 */
 		public void setData(T d) {
 			data = d;
 		}
 
+		/**
+		 * Sets the node on the left
+		 * @param l: the node that will be set to the left side
+		 */
 		public void setLeft(BSTNode l) {
 			left = l;
 		}
 
+		/**
+		 * Sets the node on the right
+		 * @param r: the node that will be set on the right side
+		 */
 		public void setRight(BSTNode r) {
 			right = r;
 		}
 
+		/**
+		 * Gets the node on the left side
+		 * @return the node on the left side
+		 */
 		public BSTNode getLeft() {
 			return left;
 		}
 
+		/**
+		 * Gets the node on the right side
+		 * @return the node on the right side
+		 */
 		public BSTNode getRight() {
 			return right;
 		}
 
+		/**
+		 * Compares the current node with the one passed in the parameter
+		 */
 		public int compareTo(BSTNode o) {
 			return ordering.compare(this.getData(), o.getData());
 		}
@@ -72,16 +103,38 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	private BSTNode root;
 	// the current size of the tree
 	private int size;
-	private Comparator<T> c;
-	private Queue q = new Queue();
+	// The queue for traversing the list in level order
+	private Queue<T> queue = new LinkedList<>();
 
-	/*
-	 * TODO: add any other internal state variables required to implement: - the
-	 * ordering for your BST (Hint: Use ordering, which is an internal comparator
-	 * object)
-	 * 
-	 * - your iterator logic (Hint: keep a queue for the iterator state)
-	 */
+	private class BSTIterator<T> implements Iterator<T> {
+		/**
+		 * Constructor for the BSTIterator
+		 */
+		public BSTIterator() {
+			queue.clear();
+			traverse(root, INORDER, new IteratorVisit());
+		}
+
+		/**
+		 * checks if there is another data element in the queue
+		 * 
+		 * @returns true if there is another element, false if it is empty
+		 */
+		@Override
+		public boolean hasNext() {
+			return !queue.isEmpty();
+		}
+
+		/**
+		 * Pops the element and returns it
+		 * 
+		 * @returns removed item from the queue
+		 */
+		@Override
+		public T next() {
+			return (T) queue.remove();
+		}
+	}
 
 	/*
 	 * The ordering of the tree is determined by the value of ordering. There is no
@@ -94,15 +147,6 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 			return t1.compareTo(t2);
 		}
 	};
-
-	// private class inOrderIterator<T> implements Iterator<T> {
-	/*
-	 * TODO: implement an in-order iterator class (Hint: use a queue (make it a
-	 * member of BST class), start by doing an in-order traverse use IteratorVisit
-	 * to enqueue the data element in the nodes to the queue in the correct order.
-	 * Then, the next() method will simply dequeue nodes until it is empty.
-	 */
-	// }
 
 	/*
 	 * The default visit action, simply print the data in the node using the
@@ -120,23 +164,18 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	 */
 	class IteratorVisit implements Visit<T> {
 		public void visit(T t) {
-			// TODO: Implement your logic for the visit method
-			// (Hint: enqueue t)
-			if(t != null) {
-				q.enqueue(t);
+			if (t != null) {
+				queue.add(t);
 			}
 		}
-		
+
 		/**
 		 * Checks to see if the queue is empty
+		 * 
 		 * @return false if empty and true if there is still elements
 		 */
 		public boolean hasNext() {
-			return !q.isEmpty();
-		}
-		
-		public T next() {
-			return q.dequeue();
+			return !queue.isEmpty();
 		}
 	}
 
@@ -144,7 +183,6 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	 * Create a new BST using the natural ordering of T.
 	 */
 	public BST() {
-		// TODO: initialize internal state variables
 		root = null;
 		size = 0;
 	}
@@ -157,7 +195,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	public BST(Comparator<T> c) {
 		root = null;
 		size = 0;
-		this.c = c;
+		ordering = c;
 	}
 
 	/**
@@ -223,8 +261,8 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	 * @returns an iterator
 	 */
 	public Iterator<T> iterator() {
-		// TODO: initialize an inOrderIterator object and return the reference.
-		return null;
+		Iterator<T> it = new BSTIterator<>();
+		return it;
 	}
 
 	// Private methods --------------------------------
@@ -275,9 +313,11 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	 * @return the maximum height of the tree
 	 */
 	private int height(BSTNode r) {
-		int hLeft = 0;
-		int hRight = 0;
-
+		int hLeft = -1;
+		int hRight = -1;
+		if (r == null) {
+			return 0;
+		}
 		if (r.getLeft() != null) {
 			hLeft = height(r.getLeft());
 		}
@@ -298,6 +338,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	private void traverse(BSTNode r, int travType, Visit<T> v) {
 		if (r != null) {
 			switch (travType) {
+			//Traverse the list inorder
 			case INORDER:
 				if (r.getLeft() != null) {
 					traverse(r.getLeft(), travType, v);
@@ -307,6 +348,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 					traverse(r.getRight(), travType, v);
 				}
 				break;
+			//Traverse the list preorder
 			case PREORDER:
 				v.visit(r.getData());
 				if (r.getLeft() != null) {
@@ -316,6 +358,7 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 					traverse(r.getRight(), travType, v);
 				}
 				break;
+			//Traverse the list postorder
 			case POSTORDER:
 				if (r.getLeft() != null) {
 					traverse(r.getLeft(), travType, v);
@@ -325,8 +368,11 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 				}
 				v.visit(r.getData());
 				break;
+			//Traverse the list levelorder
 			case LEVELORDER:
 				levelOrder(r, v);
+				break;
+			default:
 				break;
 			}
 		}
@@ -339,18 +385,19 @@ public class BST<T extends Comparable<T>> implements Iterable<T> {
 	 * @param v: the visit object
 	 */
 	private void levelOrder(BSTNode r, Visit<T> v) {
-		q.enqueue(r);
+		Queue<BSTNode> q = new LinkedList<>();
 		BSTNode current = null;
-		while(!q.isEmpty()) {
-			current = q.dequeue();
-			if(current.getLeft() != null) {
-				q.enqueue(r.getLeft());
+		q.add(r);
+		//Continue looping until the list is empty
+		while (!q.isEmpty()) {
+			current = q.remove();
+			if (current.getLeft() != null) {
+				q.add(current.getLeft());
 			}
-			if(current.getRight() != null) {
-				q.enqueue(r.getRight());
+			if (current.getRight() != null) {
+				q.add(current.getRight());
 			}
 			v.visit(current.getData());
-			current = null;
 		}
 	}
 

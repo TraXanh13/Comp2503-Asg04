@@ -23,7 +23,7 @@ public class Word implements Comparable<Word> {
    public Word(String w) 
    {
       this.word = w;
-      this.count = 0;
+      this.count = 1;
    }
 
    /* Comparator to sort from high to low frequency (count). In case of ties, alphabetically.
@@ -63,21 +63,35 @@ public class Word implements Comparable<Word> {
       }
    };
 
+   /**
+    * Gets the word String for this object
+    * @return the word
+    */
    public String getWord() 
    { 
       return word;
    }
 
+   /**
+    * Gets the number of times the word occurred
+    * @return the number of times the word was used
+    */
    public int getCount() 
    { 
       return count;
    }
 
+   /**
+    * Increases the number of times the word appeared
+    */
    public void incrCount() 
    { 
       count++; 
    }
 
+   /**
+    * returns the word and the number of times it has appeared
+    */
    public String toString() 
    { 
       return getWord() + " : " + getCount();
